@@ -1,0 +1,13 @@
+{
+  "facilities": [
+    "Tokyo CURA Healthcare Center",
+    "Hongkong CURA Healthcare Center",
+    "Seoul CURA Healthcare Center"
+  ],
+  "healthcarePrograms": [
+    "Medicare",
+    "Medicaid",
+    "None"
+  ],
+  "comment": "Automation Test Comment"
+}
