@@ -1,32 +1,49 @@
-import { Page, expect } from '@playwright/test';
+import { type Page, type Locator, expect } from '@playwright/test';
 
 export class LoginPage {
-  constructor(private page: Page) {}
+  private readonly page: Page
+  private readonly usernameText: Locator
+  private readonly passwordText: Locator
+  private readonly loginBtn: Locator
+  private readonly alertMsg: Locator
+  private readonly makeAppointmentBtn: Locator
 
-  async goto() {
-    await this.page.goto('https://katalon-demo-cura.herokuapp.com/');
+  constructor(page: Page) {
+    this.page = page
+    this.usernameText = page.locator('#txt-username')
+    this.passwordText = page.locator('#txt-password')
+    this.loginBtn = page.locator('#btn-login')
+    this.alertMsg = page.locator('p.lead.text-danger')
+    this.makeAppointmentBtn = page.locator('#btn-make-appointment')
   }
 
-  async clickMakeAppointment() {
-    await this.page.getByRole('link', { name: 'Make Appointment' }).click();
+  public async goto(): Promise<void> {
+    await this.page.goto(process.env.URL!)
   }
 
-  async login(username: string, password: string) {
-    await this.page.getByLabel('Username').fill(username);
-    await this.page.getByLabel('Password').fill(password);
-    await this.page.getByRole('button', { name: 'Login' }).click();
+  public async inputLoginForm(username: string, password: string): Promise<void> {
+    await this.usernameText.fill(username)
+    await this.passwordText.fill(password)
+    await this.loginBtn.click()
   }
 
-  async verifyLoginSuccess() {
-    await expect(this.page).toHaveURL(/.*#appointment/);
-    await expect(
-      this.page.getByRole('heading', { name: 'Make Appointment' })
-    ).toBeVisible();
+  get alertTxt(): Locator {
+    return this.alertMsg
   }
 
-  async verifyLoginFailed(message: string) {
-    const errorMessage = this.page.getByText(message);
-    await expect(errorMessage).toBeVisible();
-    await expect(errorMessage).toHaveClass(/text-danger/);
+  public async verifyLoginSuccess(): Promise<void> {
+    await expect(this.page).toHaveURL(/.*#appointment/)
+    await expect(this.page.locator('h2')).toHaveText('Make Appointment')
   }
+
+  public async verifyLoginFailed(): Promise<void> {
+    await expect(this.alertMsg).toBeVisible()
+    await expect(this.alertMsg).toHaveClass(/text-danger/)
+  }
+
+  
+  public async clickMakeAppointment(): Promise<void> {
+  await this.makeAppointmentBtn.click()
+}
+  
 }
